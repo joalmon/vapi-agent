@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agendar Diagnóstico - Taller</title>
+  </head>
+  <body>
+    <h2>Agendar diagnóstico</h2>
+    <p>Haz clic en el botón y habla con el asistente.</p>
+
+    <script src="https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js" defer></script>
+    <script>
+      window.addEventListener('load', () => {
+        window.vapiSDK.run({
+          apiKey: "b569e229-abc9-4033-b855-3c3599e80abb",
+          assistant: "c24fc010-3d8f-4acb-8964-9f39e0a4ebb1",
+          config: { position: "bottom-right" }
+        });
+      });
+    </script>
+  </body>
+</html>
