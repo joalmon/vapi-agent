@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Detector de ánimo</title>
+  <style>
+    body{font-family:system-ui;margin:24px;max-width:720px}
+    button{padding:10px 14px;margin-right:8px}
+    #status{margin:12px 0;color:#444}
+    #t{background:#111;color:#0f0;padding:12px;border-radius:8px;min-height:160px;white-space:pre-wrap}
+  </style>
+</head>
+<body>
+  <h3>Detector de ánimo</h3>
+  <button id="start">Empezar</button>
+  <button id="stop" disabled>Detener</button>
+  <div id="status">Listo</div>
+  <div id="t"></div>
+
+  <script type="module">
+    import Vapi from "https://esm.sh/@vapi-ai/web";
+
+    const PUBLIC_API_KEY = "b569e229-abc9-4033-b855-3c3599e80abb";
+    const ASSISTANT_ID = "c6621dea-3a70-446e-8f5b-f9f6d6263bf0";
+
+    const $ = (id) => document.getElementById(id);
+    const status = (s) => $("status").textContent = s;
+    const add = (s) => $("t").textContent += s + "\n";
+
+    let vapi;
+
+    $("start").onclick = async () => {
+      $("t").textContent = "";
+      status("Conectando...");
+      $("start").disabled = true;
+      $("stop").disabled = false;
+
+      vapi = new Vapi(PUBLIC_API_KEY);
+      vapi.on("call-start", () => status("En llamada"));
+      vapi.on("call-end",   () => { status("Listo"); $("start").disabled=false; $("stop").disabled=true; });
+      vapi.on("error", (e) => { status("Error (ver consola)"); console.error(e); });
+
+      vapi.on("message", (m) => {
+        if (m?.type === "transcript" && m.transcriptType === "final") {
+          add((m.role === "user" ? "Tú: " : "Agente: ") + m.transcript);
+        }
+      });
+
+      await vapi.start(ASSISTANT_ID);
+    };
+
+    $("stop").onclick = async () => {
+      if (vapi) await vapi.stop();
+    };
+  </script>
+</body>
+</html>
